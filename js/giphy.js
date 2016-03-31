@@ -46,18 +46,48 @@
 //     console.log(data[0].url);
 //   }
 //
-function getGiphyGifs(query, callback) {
-  var endpoint = "https://api.giphy.com/v1/gifs/search";
-  var parameters = {
-    // Public beta API key.
-    api_key: "dc6zaTOxFJmzC",
-    // Return up to 25 GIF images.
-    limit: 25,
-    // jQuery will sanitize the query, e.g. " " because "+".
-    q: query,
-  }
-
-  $.get(endpoint, parameters).done(function(response) {
-    callback(response.data);
-  });
+function addimages(data){
+  for (var i = 0; i < data.length; i++) {
+        var gifs = data[i].images.fixed_width_downsampled.url;
+        $("#search-results").append("<div class=\"row\">" + "<img src=" + gifs + ">" + "</div>");
+      }
 }
+$(document).ready(function(){
+  var pagenumbers = 0;
+  
+  $("#submit").click(function(){
+    
+    $('#search-results').empty();
+    var search = $("#query").val();
+    pagenumbers = 0;
+    getGiphyGifs(search, 0, addimages);
+    
+  });
+  
+  $("#button").click(function(){
+    var search = $("#query").val();
+    $("#search-results").empty();
+    pagenumbers += 25;
+      getGiphyGifs(search, pagenumbers, addimages);
+  });
+
+
+
+  function getGiphyGifs(query, offset, callback) {
+    var endpoint = "https://api.giphy.com/v1/gifs/search";
+    var parameters = {
+      // Public beta API key.
+      api_key: "dc6zaTOxFJmzC",
+      // Return up to 25 GIF images.
+      limit: 25,
+      // jQuery will sanitize the query, e.g. " " because "+".
+      q: query,
+      offset: offset, 
+    }
+
+    $.get(endpoint, parameters).done(function(response) {
+      callback(response.data);
+    });
+  }
+});
+
